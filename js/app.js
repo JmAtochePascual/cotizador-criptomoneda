@@ -74,6 +74,8 @@ const consultarAPI = (moneda, criptoMoneda) => {
 
 // Mostrar resultado
 const mostrarResultado = (criptomoneda) => {
+  limpiarHTML();
+
   const { PRICE, HIGHDAY, LOWDAY, CHANGEPCT24HOUR, LASTUPDATE } = criptomoneda;
 
   const precio = document.createElement('p');
@@ -100,6 +102,13 @@ const mostrarResultado = (criptomoneda) => {
     ultimaActualizacion);
 };
 
+
+// Limpiar resultados previos
+const limpiarHTML = () => {
+  while (resultado.firstChild) {
+    resultado.removeChild(resultado.firstChild);
+  }
+};
 
 // Cargar eventos
 document.addEventListener('DOMContentLoaded', () => {
