@@ -38,7 +38,7 @@ const consultarCriptomoneda = e => {
     return;
   }
 
-  console.log('calculando...');
+  consultarAPI(moneda, criptoMoneda);
 };
 
 
@@ -57,6 +57,17 @@ const mostrarAlerta = mensaje => {
       divMensaje.remove();
     }, 3000);
   }
+};
+
+
+// Consultar API
+const consultarAPI = (moneda, criptoMoneda) => {
+  const URL = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${criptoMoneda}&tsyms=${moneda}`;
+
+  fetch(URL)
+    .then(respuesta => respuesta.json())
+    .then(resultado => console.log(resultado.DISPLAY[criptoMoneda][moneda]))
+    .catch(error => console.log(error));
 };
 
 // Cargar eventos
