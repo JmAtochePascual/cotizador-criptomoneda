@@ -1,4 +1,6 @@
+// Selectores
 const criptomonedasSelect = document.querySelector('#criptomonedas');
+const formulario = document.querySelector('#formulario');
 
 // Cargar criptomonedas
 const consultarCriptomonedas = () => {
@@ -24,7 +26,24 @@ const cargarSelectCriptomonedasElement = criptomonedas => {
 };
 
 
+// Inicia la consulta
+const consultarCriptomoneda = e => {
+  e.preventDefault();
+
+  const moneda = document.querySelector('#moneda').value;
+  const criptoMoneda = document.querySelector('#criptomonedas').value;
+
+  if ([moneda, criptoMoneda].includes('')) {
+    console.log('Ambos campos son obligatorios');
+    return;
+  }
+
+  console.log('calculando...');
+};
+
+
 // Cargar eventos
 document.addEventListener('DOMContentLoaded', () => {
   consultarCriptomonedas();
+  formulario.addEventListener('submit', consultarCriptomoneda);
 });
