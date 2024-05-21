@@ -34,13 +34,30 @@ const consultarCriptomoneda = e => {
   const criptoMoneda = document.querySelector('#criptomonedas').value;
 
   if ([moneda, criptoMoneda].includes('')) {
-    console.log('Ambos campos son obligatorios');
+    mostrarAlerta('Ambos campos son obligatorios');
     return;
   }
 
   console.log('calculando...');
 };
 
+
+// Muestra un mensaje de alerta 
+const mostrarAlerta = mensaje => {
+  const existeAlerta = document.querySelector('.error');
+
+  if (!existeAlerta) {
+    const divMensaje = document.createElement('div');
+    divMensaje.classList.add('error');
+    divMensaje.textContent = mensaje;
+
+    formulario.appendChild(divMensaje);
+
+    setTimeout(() => {
+      divMensaje.remove();
+    }, 3000);
+  }
+};
 
 // Cargar eventos
 document.addEventListener('DOMContentLoaded', () => {
