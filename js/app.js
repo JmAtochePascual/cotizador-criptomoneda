@@ -1,6 +1,7 @@
 // Selectores
 const criptomonedasSelect = document.querySelector('#criptomonedas');
 const formulario = document.querySelector('#formulario');
+const resultado = document.querySelector('#resultado');
 
 // Cargar criptomonedas
 const consultarCriptomonedas = () => {
@@ -66,9 +67,39 @@ const consultarAPI = (moneda, criptoMoneda) => {
 
   fetch(URL)
     .then(respuesta => respuesta.json())
-    .then(resultado => console.log(resultado.DISPLAY[criptoMoneda][moneda]))
+    .then(resultado => mostrarResultado(resultado.DISPLAY[criptoMoneda][moneda]))
     .catch(error => console.log(error));
 };
+
+
+// Mostrar resultado
+const mostrarResultado = (criptomoneda) => {
+  const { PRICE, HIGHDAY, LOWDAY, CHANGEPCT24HOUR, LASTUPDATE } = criptomoneda;
+
+  const precio = document.createElement('p');
+  precio.classList.add('precio');
+  precio.innerHTML = `El precio es: <span>${PRICE}</span>`;
+
+  const precioAlto = document.createElement('p');
+  precioAlto.innerHTML = `Precio más alto del día: <span>${HIGHDAY}</span>`;
+
+  const precioBajo = document.createElement('p');
+  precioBajo.innerHTML = `Precio más bajo del día: <span>${LOWDAY}</span>`;
+
+  const ultimasHoras = document.createElement('p');
+  ultimasHoras.innerHTML = `Variación últimas 24 horas: <span>${CHANGEPCT24HOUR}%</span>`;
+
+  const ultimaActualizacion = document.createElement('p');
+  ultimaActualizacion.innerHTML = `Última actualización: <span>${LASTUPDATE}</span>`;
+
+  resultado.append(
+    precio,
+    precioAlto,
+    precioBajo,
+    ultimasHoras,
+    ultimaActualizacion);
+};
+
 
 // Cargar eventos
 document.addEventListener('DOMContentLoaded', () => {
