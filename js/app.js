@@ -4,13 +4,16 @@ const formulario = document.querySelector('#formulario');
 const resultado = document.querySelector('#resultado');
 
 // Cargar criptomonedas
-const consultarCriptomonedas = () => {
+const consultarCriptomonedas = async () => {
   const URL = `https://min-api.cryptocompare.com/data/top/mktcapfull?limit=10&tsym=USD`;
 
-  fetch(URL)
-    .then(respuesta => respuesta.json())
-    .then(resultado => cargarSelectCriptomonedasElement(resultado.Data))
-    .catch(error => console.log(error));
+  try {
+    const respuesta = await fetch(URL);
+    const resultado = await respuesta.json();
+    cargarSelectCriptomonedasElement(resultado.Data);
+  } catch (error) {
+    console.log(error, 'Error en la consulta');
+  }
 };
 
 
