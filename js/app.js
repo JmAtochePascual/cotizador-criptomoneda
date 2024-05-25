@@ -65,15 +65,18 @@ const mostrarAlerta = mensaje => {
 
 
 // Consultar API
-const consultarAPI = (moneda, criptoMoneda) => {
+const consultarAPI = async (moneda, criptoMoneda) => {
   const URL = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${criptoMoneda}&tsyms=${moneda}`;
 
   mostrarSpinner();
 
-  fetch(URL)
-    .then(respuesta => respuesta.json())
-    .then(resultado => mostrarResultado(resultado.DISPLAY[criptoMoneda][moneda]))
-    .catch(error => console.log(error));
+  try {
+    const respuesta = await fetch(URL);
+    const resultado = await respuesta.json();
+    mostrarResultado(resultado.DISPLAY[criptoMoneda][moneda]);
+  } catch (error) {
+    console.log(error, 'Error en la consulta');
+  }
 };
 
 
