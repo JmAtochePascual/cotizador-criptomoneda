@@ -1,53 +1,46 @@
-// Selectores
-const criptomonedasSelect = document.querySelector('#criptomonedas');
-const formulario = document.querySelector('#formulario');
-const resultado = document.querySelector('#resultado');
+const cryptoCurrencySelectElement = document.querySelector('#criptomonedas');
+const currencySelectElement = document.querySelector('#moneda');
+const formElement = document.querySelector('#formulario');
+const resultElement = document.querySelector('#resultado');
 
-// Cargar criptomonedas
-const consultarCriptomonedas = async () => {
+const getCryptoCurrencies = async () => {
   const URL = `https://min-api.cryptocompare.com/data/top/mktcapfull?limit=10&tsym=USD`;
 
   try {
-    const respuesta = await fetch(URL);
-    const resultado = await respuesta.json();
-    cargarSelectCriptomonedasElement(resultado.Data);
+    const response = await fetch(URL);
+    const data = await response.json();
+    showCryptoCurrencies(data.Data);
   } catch (error) {
     console.log(error, 'Error en la consulta');
-  }
+  };
 };
 
-
-// Cargar criptomonedas en el select
-const cargarSelectCriptomonedasElement = criptomonedas => {
-  criptomonedas.forEach(cripto => {
-    const { FullName, Name } = cripto.CoinInfo;
+const showCryptoCurrencies = (cryptoCurrencies) => {
+  cryptoCurrencies.forEach(cryptoCurrency => {
+    const { FullName, Name } = cryptoCurrency.CoinInfo;
 
     const option = document.createElement('option');
     option.value = Name;
     option.textContent = FullName;
-    criptomonedasSelect.appendChild(option);
+    cryptoCurrencySelectElement.appendChild(option);
   });
 };
 
+const startApp = (event) => {
+  event.preventDefault();
 
-// Inicia la consulta
-const consultarCriptomoneda = e => {
-  e.preventDefault();
+  const currency = currencySelectElement.value;
+  const cryptoCurrency = cryptoCurrencySelectElement.value;
 
-  const moneda = document.querySelector('#moneda').value;
-  const criptoMoneda = document.querySelector('#criptomonedas').value;
-
-  if ([moneda, criptoMoneda].includes('')) {
-    mostrarAlerta('Ambos campos son obligatorios');
+  if ([currency, cryptoCurrency].includes('')) {
+    showAlert('Ambos campos son obligatorios');
     return;
   }
 
-  consultarAPI(moneda, criptoMoneda);
+  getCryptoCompare(currency, cryptoCurrency);
 };
 
-
-// Muestra un mensaje de alerta 
-const mostrarAlerta = mensaje => {
+const showAlert = mensaje => {
   const existeAlerta = document.querySelector('.error');
 
   if (!existeAlerta) {
@@ -55,7 +48,7 @@ const mostrarAlerta = mensaje => {
     divMensaje.classList.add('error');
     divMensaje.textContent = mensaje;
 
-    formulario.appendChild(divMensaje);
+    formElement.appendChild(divMensaje);
 
     setTimeout(() => {
       divMensaje.remove();
@@ -63,65 +56,57 @@ const mostrarAlerta = mensaje => {
   }
 };
 
+const getCryptoCompare = async (currency, cryptoCurrency) => {
+  const URL = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${cryptoCurrency}&tsyms=${currency}`;
 
-// Consultar API
-const consultarAPI = async (moneda, criptoMoneda) => {
-  const URL = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${criptoMoneda}&tsyms=${moneda}`;
-
-  mostrarSpinner();
+  showSpinner();
 
   try {
-    const respuesta = await fetch(URL);
-    const resultado = await respuesta.json();
-    mostrarResultado(resultado.DISPLAY[criptoMoneda][moneda]);
+    const response = await fetch(URL);
+    const data = await response.json();
+    showResult(data.DISPLAY[cryptoCurrency][currency]);
   } catch (error) {
     console.log(error, 'Error en la consulta');
   }
 };
 
+const showResult = (cryptoCurrency) => {
+  cleanHtml();
 
-// Mostrar resultado
-const mostrarResultado = (criptomoneda) => {
-  limpiarHTML();
+  const { PRICE, HIGHDAY, LOWDAY, CHANGEPCT24HOUR, LASTUPDATE } = cryptoCurrency;
 
-  const { PRICE, HIGHDAY, LOWDAY, CHANGEPCT24HOUR, LASTUPDATE } = criptomoneda;
+  const price = document.createElement('p');
+  price.classList.add('precio');
+  price.innerHTML = `El precio es: <span>${PRICE}</span>`;
 
-  const precio = document.createElement('p');
-  precio.classList.add('precio');
-  precio.innerHTML = `El precio es: <span>${PRICE}</span>`;
+  const heighPrice = document.createElement('p');
+  heighPrice.innerHTML = `Precio más alto del día: <span>${HIGHDAY}</span>`;
 
-  const precioAlto = document.createElement('p');
-  precioAlto.innerHTML = `Precio más alto del día: <span>${HIGHDAY}</span>`;
+  const lowPrice = document.createElement('p');
+  lowPrice.innerHTML = `Precio más bajo del día: <span>${LOWDAY}</span>`;
 
-  const precioBajo = document.createElement('p');
-  precioBajo.innerHTML = `Precio más bajo del día: <span>${LOWDAY}</span>`;
+  const lastHours = document.createElement('p');
+  lastHours.innerHTML = `Variación últimas 24 horas: <span>${CHANGEPCT24HOUR}%</span>`;
 
-  const ultimasHoras = document.createElement('p');
-  ultimasHoras.innerHTML = `Variación últimas 24 horas: <span>${CHANGEPCT24HOUR}%</span>`;
+  const lastActualitation = document.createElement('p');
+  lastActualitation.innerHTML = `Última actualización: <span>${LASTUPDATE}</span>`;
 
-  const ultimaActualizacion = document.createElement('p');
-  ultimaActualizacion.innerHTML = `Última actualización: <span>${LASTUPDATE}</span>`;
-
-  resultado.append(
-    precio,
-    precioAlto,
-    precioBajo,
-    ultimasHoras,
-    ultimaActualizacion);
+  resultElement.append(
+    price,
+    heighPrice,
+    lowPrice,
+    lastHours,
+    lastActualitation);
 };
 
-
-// Limpiar resultados previos
-const limpiarHTML = () => {
-  while (resultado.firstChild) {
-    resultado.removeChild(resultado.firstChild);
+const cleanHtml = () => {
+  while (resultElement.firstChild) {
+    resultElement.removeChild(resultElement.firstChild);
   }
 };
 
-
-// Notificación de carga
-const mostrarSpinner = () => {
-  limpiarHTML();
+const showSpinner = () => {
+  cleanHtml();
 
   const spinner = document.createElement('div');
   spinner.classList.add('spinner');
@@ -132,11 +117,10 @@ const mostrarSpinner = () => {
     <div class="bounce3"></div>
   `;
 
-  resultado.appendChild(spinner);
+  resultElement.appendChild(spinner);
 };
 
-// Cargar eventos
 document.addEventListener('DOMContentLoaded', () => {
-  consultarCriptomonedas();
-  formulario.addEventListener('submit', consultarCriptomoneda);
+  getCryptoCurrencies();
+  formElement.addEventListener('submit', startApp);
 });
